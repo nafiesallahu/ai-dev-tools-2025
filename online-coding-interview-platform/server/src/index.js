@@ -62,8 +62,14 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`API listening on ${PORT}`);
-});
+function start() {
+  return server.listen(PORT, () => {
+    console.log(`API listening on ${PORT}`);
+  });
+}
 
+if (require.main === module) {
+  start();
+}
 
+module.exports = { app, server, start };
