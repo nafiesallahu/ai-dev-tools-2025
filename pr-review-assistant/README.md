@@ -2,10 +2,40 @@
 
 # PR Review Assistant
 
-## Live URLs (placeholders)
+## Live Deployment
 
-- Frontend: `https://<your-vercel-app>.vercel.app`
-- Backend: `https://<your-render-service>.onrender.com`
+**Production URLs**
+
+- Frontend (Vercel): `https://ai-dev-tools-2025.vercel.app`
+- Backend (Render): `https://ai-dev-tools-2025.onrender.com`
+
+**Architecture**
+
+- Frontend is deployed on **Vercel** as a static Vite build.
+- Backend is deployed on **Render** as a Dockerized FastAPI service.
+- Frontend communicates with the backend over HTTPS using `VITE_API_BASE_URL`.
+
+**Production environment variables**
+
+- Backend (Render):
+  - `PORT` (provided by Render)
+  - `FRONTEND_ORIGIN=https://ai-dev-tools-2025.vercel.app`
+- Frontend (Vercel):
+  - `VITE_API_BASE_URL=https://ai-dev-tools-2025.onrender.com`
+
+### Verification
+
+```bash
+curl https://ai-dev-tools-2025.onrender.com/health
+```
+
+Expected response:
+- `{"status":"ok"}`
+
+**Notes**
+
+- Deployments use free tiers: **Render Free** + **Vercel Hobby**
+- Backend cold starts may occur on Render free tier (first request can be slow)
 
 ## Problem description
 
