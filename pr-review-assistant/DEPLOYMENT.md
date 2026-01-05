@@ -1,8 +1,13 @@
 # Deployment
 
-Minimal, realistic deployment instructions for the **PR Review Assistant**.
+Minimal, realistic deployment instructions for the **PR Review Assistant** (located at `ai-dev-tools-2025/pr-review-assistant`).
 
 > Deployments are **manual by design** (no CI auto-deploy). CI runs tests only.
+
+## Live URLs (this repo)
+
+- Frontend (Vercel): `https://ai-dev-tools-2025.vercel.app`
+- Backend (Render): `https://ai-dev-tools-2025.onrender.com`
 
 ## Backend (Render) — Docker Web Service
 
@@ -14,7 +19,7 @@ Render can deploy the backend directly from this repo using the existing `backen
 2. In Render: **New → Web Service** → connect your repo.
 3. Choose **Environment: Docker**.
 4. Configure:
-   - **Root Directory**: `ai-dev-tools-2025/pr-review-assistant/backend`
+   - **Root Directory**: `pr-review-assistant/backend`
    - **Dockerfile Path**: `Dockerfile`
    - **Health Check Path**: `/health`
 5. Start command:
@@ -58,7 +63,7 @@ The frontend reads the backend base URL from **`VITE_API_BASE_URL`** at build ti
 
 1. Import the repo into Vercel.
 2. Set project settings:
-   - **Root Directory**: `ai-dev-tools-2025/pr-review-assistant/frontend`
+   - **Root Directory**: `pr-review-assistant/frontend`
    - **Framework Preset**: Vite
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
