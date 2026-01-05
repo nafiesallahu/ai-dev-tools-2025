@@ -5,20 +5,25 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // Forward /api/* to the backend service inside the docker-compose network.
+      // Also rewrite the path so:
+      // - /api/health -> /health
+      // - /api/review -> /review
       '/api': {
-        target: process.env.VITE_PROXY_TARGET || 'http://localhost:8000',
+        target: 'http://backend:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-    }
+    },
   },
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     env: {
-      // For unit tests, make calls go to relative paths like "/review"
-      // (so we can assert POST /review without involving proxies).
-      VITE_API_BASE_URL: ''
-    }
+      // In unit tests we want fetch URLs like "/review" (no proxy involved).
+      VITE_API_BASE_URL: '',
+    },
   },
 })
+
+

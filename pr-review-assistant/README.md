@@ -31,6 +31,13 @@ Pull request reviews are critical for quality and security, but they’re time-c
   - Vite dev server proxies `/api/*` → backend service
   - frontend base URL is configured via **`VITE_API_BASE_URL`** (Compose sets it to `/api`)
 
+### `/api` proxy (why it exists)
+
+The backend exposes **`/health`** and **`/review`** (no `/api` prefix). In development we keep the frontend calling **`/api/...`** and configure Vite to proxy and rewrite:
+
+- `/api/health` → `/health`
+- `/api/review` → `/review`
+
 ### API contract (Pydantic models)
 - `ReviewRequest`: `{ title: str, diff: str }`
 - `ReviewResponse`: `{ summary: str, score: int, findings: Finding[] }`
