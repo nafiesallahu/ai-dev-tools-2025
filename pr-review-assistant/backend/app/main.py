@@ -1,12 +1,45 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Literal
+import os
 
 app = FastAPI(title="PR Review Assistant API", version="0.1.0")
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+def _cors_allow_origins() -> list[str]:
+    """
+    Comma-separated origins via env:
+      CORS_ALLOW_ORIGINS="https://myapp.vercel.app,https://myapp.netlify.app"
+    Defaults keep local dev working.
+    """
+    defaults = ["http://localhost:5173", "http://localhost:3000"]
+    raw = os.getenv("CORS_ALLOW_ORIGINS", "").strip()
+    if not raw:
+        return defaults
+    extra = [o.strip() for o in raw.split(",") if o.strip()]
+    # stable order + avoid duplicates
+    seen: set[str] = set()
+    out: list[str] = []
+    for origin in defaults + extra:
+        if origin not in seen:
+            seen.add(origin)
+            out.append(origin)
+    return out
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_allow_origins(),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class HealthResponse(BaseModel):
+    status: str
+
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse(status="ok")
 
 Severity = Literal["low", "medium", "high"]
 
@@ -25,7 +58,7 @@ class ReviewResponse(BaseModel):
     score: int
 
 @app.post("/review", response_model=ReviewResponse)
-def review_pr(payload: ReviewRequest):
+def review_pr(payload: ReviewRequest) -> ReviewResponse:
     diff = payload.diff
     findings: List[Finding] = []
 
