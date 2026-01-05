@@ -1,81 +1,75 @@
 # Deployment
 
-This guide shows a minimal, realistic deployment path for the **PR Review Assistant**.
+Minimal, realistic deployment instructions for the **PR Review Assistant**.
 
 ## Backend (Render) — Docker Web Service
 
-Render can deploy the backend directly from the repo using the existing `backend/Dockerfile`.
+Render can deploy the backend directly from this repo using the existing `backend/Dockerfile`.
 
-### Steps
+### Step-by-step
 
 1. Push your repo to GitHub.
-2. In Render, create a **New → Web Service**.
-3. Select your GitHub repo.
-4. Choose **Environment: Docker**.
-5. Configure:
+2. In Render: **New → Web Service** → connect your repo.
+3. Choose **Environment: Docker**.
+4. Configure:
    - **Root Directory**: `ai-dev-tools-2025/pr-review-assistant/backend`
    - **Dockerfile Path**: `Dockerfile`
    - **Health Check Path**: `/health`
+5. Start command:
+   - If Render asks for a start command, use:
+     - `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - (Alternative) A `Procfile` is included at `backend/Procfile`.
 6. Deploy.
 
-### Environment variables
+### Environment variables (Render)
 
-Render will provide `PORT` automatically (not required by this app since the container listens on 8000), but you can keep configuration explicit if you prefer:
+Required / recommended:
 
-- **`PYTHONPATH`**: `/app` (already set in the Dockerfile; optional in Render)
-- **`CORS_ALLOW_ORIGINS`**: comma-separated list of allowed frontend origins
-  - Example:
-    - `CORS_ALLOW_ORIGINS="https://your-frontend.vercel.app,https://your-frontend.netlify.app"`
+- **`PORT`**: Render provides this automatically.
+- **`FRONTEND_ORIGIN`**: your deployed Vercel URL (CORS allow origin)
+  - Example: `FRONTEND_ORIGIN=https://<your-vercel-app>.vercel.app`
+- **`PYTHONPATH`**: `/app` (optional; Dockerfile already sets it)
 
-### Expected live URLs
+### Expected live URL
 
-Render assigns a URL like:
-- `https://<your-service-name>.onrender.com`
+Render will assign something like:
+- `https://<your-render-service>.onrender.com`
 
-Once deployed, verify:
-- Health: `https://<your-service-name>.onrender.com/health`
-- Docs: `https://<your-service-name>.onrender.com/docs`
-- OpenAPI: `https://<your-service-name>.onrender.com/openapi.json`
+Verify:
+- `curl https://<your-render-service>.onrender.com/health` → `{"status":"ok"}`
+- `curl https://<your-render-service>.onrender.com/` → message JSON
+- `https://<your-render-service>.onrender.com/docs` (OpenAPI UI)
 
-## Frontend (Vercel or Netlify) — static hosting (recommended)
+## Frontend (Vercel) — Vite static deploy
 
-The frontend can be deployed as a static Vite build. You’ll point it at the deployed backend using `VITE_API_BASE_URL`.
+The frontend reads the backend base URL from **`VITE_API_BASE_URL`** at build time.
 
-### Key environment variable
+### Important note: dev proxy vs production base URL
 
-- **`VITE_API_BASE_URL`**: set this to the **backend base URL**
-  - Example: `VITE_API_BASE_URL="https://<your-service-name>.onrender.com"`
+- **Local Docker/dev**: frontend uses `VITE_API_BASE_URL=/api` and Vite proxies `/api/*` → backend container.
+- **Production (Vercel)**: set `VITE_API_BASE_URL` to the full backend URL (no `/api` prefix unless you add rewrites).
+  - Example: `VITE_API_BASE_URL=https://<your-render-service>.onrender.com`
 
-> Note: In local Docker Compose we use `VITE_API_BASE_URL=/api` and Vite proxies `/api` to the backend container. On hosted static deployments, you typically set `VITE_API_BASE_URL` to the full backend URL instead.
+### Step-by-step (Vercel)
 
-### Vercel (example)
-
-1. Import the repo in Vercel.
+1. Import the repo into Vercel.
 2. Set project settings:
    - **Root Directory**: `ai-dev-tools-2025/pr-review-assistant/frontend`
+   - **Framework Preset**: Vite
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
-3. Add environment variable:
-   - `VITE_API_BASE_URL=https://<your-service-name>.onrender.com`
+3. Add environment variable (Production + Preview):
+   - `VITE_API_BASE_URL=https://<your-render-service>.onrender.com`
 4. Deploy.
 
-### Netlify (example)
+### Post-deploy verification
 
-1. New site from Git → select repo.
-2. Configure:
-   - **Base directory**: `ai-dev-tools-2025/pr-review-assistant/frontend`
-   - **Build command**: `npm run build`
-   - **Publish directory**: `frontend/dist`
-3. Add environment variable:
-   - `VITE_API_BASE_URL=https://<your-service-name>.onrender.com`
-4. Deploy.
-
-## Post-deploy checklist
-
-- Backend responds at `/health` and `/docs`
-- Frontend loads and can:
-  - run the **Health** check successfully
-  - submit a diff to **/review** and display results
-- `CORS_ALLOW_ORIGINS` includes your hosted frontend URL(s)
+- Backend:
+  - `curl <backend_url>/health` → `{"status":"ok"}`
+  - `curl <backend_url>/` → message JSON
+- Frontend UI:
+  - Open `https://<your-vercel-app>.vercel.app`
+  - Click **Health** → should show **ok**
+  - Submit a diff to **Review PR** → should show summary/score/findings
 
 

@@ -21,8 +21,16 @@ type HealthResponse = { status: string }
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
+function joinUrl(base: string, path: string): string {
+  // base can be "/api" or "https://example.com" (optionally ending with "/")
+  // path is expected to start with "/"
+  const b = base.endsWith('/') ? base.slice(0, -1) : base
+  const p = path.startsWith('/') ? path : `/${path}`
+  return `${b}${p}`
+}
+
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, init)
+  const res = await fetch(joinUrl(API_BASE, path), init)
   if (!res.ok) {
     const text = await res.text().catch(() => '')
     throw new Error(text || `Request failed (${res.status})`)

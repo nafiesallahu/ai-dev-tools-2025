@@ -8,34 +8,35 @@ app = FastAPI(title="PR Review Assistant API", version="0.1.0")
 
 def _cors_allow_origins() -> list[str]:
     """
-    Comma-separated origins via env:
-      CORS_ALLOW_ORIGINS="https://myapp.vercel.app,https://myapp.netlify.app"
-    Defaults keep local dev working.
+    Production: set FRONTEND_ORIGIN to your deployed frontend URL (e.g. Vercel).
+    Local dev: allow localhost origins if FRONTEND_ORIGIN is not set.
     """
-    defaults = ["http://localhost:5173", "http://localhost:3000"]
-    raw = os.getenv("CORS_ALLOW_ORIGINS", "").strip()
-    if not raw:
-        return defaults
-    extra = [o.strip() for o in raw.split(",") if o.strip()]
-    # stable order + avoid duplicates
-    seen: set[str] = set()
-    out: list[str] = []
-    for origin in defaults + extra:
-        if origin not in seen:
-            seen.add(origin)
-            out.append(origin)
-    return out
+    frontend_origin = os.getenv("FRONTEND_ORIGIN", "").strip()
+    if frontend_origin:
+        # Allow a single origin (or a comma-separated list, if provided)
+        origins = [o.strip() for o in frontend_origin.split(",") if o.strip()]
+        return origins
+
+    # Local dev defaults
+    return [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_allow_origins(),
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 class HealthResponse(BaseModel):
     status: str
+
+@app.get("/")
+def root():
+    return {"message": "PR Review Assistant API. See /docs for OpenAPI."}
 
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:

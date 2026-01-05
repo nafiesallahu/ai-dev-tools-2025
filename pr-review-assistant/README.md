@@ -2,6 +2,11 @@
 
 # PR Review Assistant
 
+## Live URLs (placeholders)
+
+- Frontend: `https://<your-vercel-app>.vercel.app`
+- Backend: `https://<your-render-service>.onrender.com`
+
 ## Problem description
 
 Pull request reviews are critical for quality and security, but they’re time-consuming and inconsistent across reviewers and teams. **PR Review Assistant** is a small, reproducible system that takes a **PR title + git diff** and returns a **structured review** (summary, score, findings) via a FastAPI backend and a minimal React + TypeScript UI.
@@ -37,6 +42,8 @@ The backend exposes **`/health`** and **`/review`** (no `/api` prefix). In devel
 
 - `/api/health` → `/health`
 - `/api/review` → `/review`
+
+In production (e.g. Vercel), you typically set `VITE_API_BASE_URL` to the full backend URL (e.g. `https://<your-render-service>.onrender.com`) and do not use the `/api` proxy.
 
 ### API contract (Pydantic models)
 - `ReviewRequest`: `{ title: str, diff: str }`
