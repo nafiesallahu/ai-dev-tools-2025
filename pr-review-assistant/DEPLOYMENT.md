@@ -2,7 +2,7 @@
 
 Minimal, realistic deployment instructions for the **PR Review Assistant** (located at `ai-dev-tools-2025/pr-review-assistant`).
 
-> Deployments are **manual by design** (no CI auto-deploy). CI runs tests only.
+> Deployments are **automatic via Git integrations**. On successful pushes to `main`, Vercel and Render automatically deploy the frontend and backend respectively.
 
 ## Live URLs (this repo)
 

@@ -162,4 +162,4 @@ For development rules and recommended prompts, see [`AGENTS.md`](./AGENTS.md).
 
 ## CI/CD note
 
-CI runs automated tests (backend unit + integration, and frontend tests). Deployments are manual/dashboard-triggered (Render + Vercel), with no auto-deploy from GitHub Actions.
+CI runs automated tests (backend unit + integration, and frontend tests) on every push and pull request. On successful pushes to `main`, the frontend and backend are automatically deployed via Vercel and Render Git integrations.
