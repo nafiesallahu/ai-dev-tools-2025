@@ -2,6 +2,8 @@
 
 Minimal, realistic deployment instructions for the **PR Review Assistant**.
 
+> Deployments are **manual by design** (no CI auto-deploy). CI runs tests only.
+
 ## Backend (Render) — Docker Web Service
 
 Render can deploy the backend directly from this repo using the existing `backend/Dockerfile`.
@@ -34,6 +36,8 @@ Required / recommended:
 
 Render will assign something like:
 - `https://<your-render-service>.onrender.com`
+Example (this repo):
+- `https://ai-dev-tools-2025.onrender.com`
 
 Verify:
 - `curl https://<your-render-service>.onrender.com/health` → `{"status":"ok"}`
@@ -69,6 +73,7 @@ The frontend reads the backend base URL from **`VITE_API_BASE_URL`** at build ti
   - `curl <backend_url>/` → message JSON
 - Frontend UI:
   - Open `https://<your-vercel-app>.vercel.app`
+  - Example (this repo): `https://ai-dev-tools-2025.vercel.app`
   - Click **Health** → should show **ok**
   - Submit a diff to **Review PR** → should show summary/score/findings
 

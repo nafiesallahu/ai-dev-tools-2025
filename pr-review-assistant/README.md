@@ -41,6 +41,10 @@ Expected response:
 
 Pull request reviews are critical for quality and security, but they’re time-consuming and inconsistent across reviewers and teams. **PR Review Assistant** is a small, reproducible system that takes a **PR title + git diff** and returns a **structured review** (summary, score, findings) via a FastAPI backend and a minimal React + TypeScript UI.
 
+**Statefulness / database**
+
+This project is intentionally **stateless** and **does not use a database**.
+
 ## Features
 
 - **Inputs**: PR title + diff/patch text
@@ -145,6 +149,10 @@ This project was implemented using **Cursor** as an AI-assisted coding environme
 - **Tests added early** to lock in contract and prevent regressions
 - **Reproducibility-first**: Docker Compose as the default run path
 
+### MCP usage in practice
+
+MCP (Model Context Protocol) tools in Cursor (notably **Context7**) were used to look up framework-specific guidance (FastAPI CORS patterns, Vite/Vitest config, React Testing Library idioms) to keep changes consistent with the intended architecture and avoid ad-hoc implementation drift.
+
 ### Example prompts used
 - “Create a minimal React + TypeScript frontend that calls POST `/review` and shows results.”
 - “Add CORS for the frontend origin and keep `/review` response stable.”
@@ -176,4 +184,7 @@ If you’re using MCP in Cursor, open the MCP tools panel and ensure Context7 is
 
 - `CONTEXT7_API_KEY` (set in your shell, `.env` that is gitignored, or your OS secrets manager)
 
-The repo should contain **no secrets**.
+
+## CI/CD note
+
+CI runs **automated tests only**. Deployment is **manual**, triggered via the Render and Vercel dashboards.
