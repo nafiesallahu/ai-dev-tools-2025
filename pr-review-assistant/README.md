@@ -1,5 +1,7 @@
 [![CI](https://github.com/nafiesallahu/ai-dev-tools-2025/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nafiesallahu/ai-dev-tools-2025/actions/workflows/ci.yml?query=branch%3Amain)
 
+Green badge indicates all tests passed on main.
+
 # PR Review Assistant
 
 ## Live Deployment
@@ -9,35 +11,7 @@
 - Frontend (Vercel): `https://ai-dev-tools-2025.vercel.app`
 - Backend (Render): `https://ai-dev-tools-2025.onrender.com`
 
-**Architecture**
-
-- Frontend is deployed on **Vercel** as a static Vite build.
-- Backend is deployed on **Render** as a Dockerized FastAPI service.
-- Frontend communicates with the backend over HTTPS using `VITE_API_BASE_URL`.
-
-**Production environment variables**
-
-- Backend (Render):
-  - `PORT` (provided by Render)
-  - `FRONTEND_ORIGIN=https://ai-dev-tools-2025.vercel.app`
-- Frontend (Vercel):
-  - `VITE_API_BASE_URL=https://ai-dev-tools-2025.onrender.com`
-
-### Verification
-
-```bash
-curl https://ai-dev-tools-2025.onrender.com/health
-```
-
-Expected response:
-- `{"status":"ok"}`
-
-**Notes**
-
-- Deployments use free tiers: **Render Free** + **Vercel Hobby**
-- Backend cold starts may occur on Render free tier (first request can be slow)
-
-For full deployment steps, see [`DEPLOYMENT.md`](./DEPLOYMENT.md).
+For full deployment steps and environment variables, see [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
 ## Problem description
 
